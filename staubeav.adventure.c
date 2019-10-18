@@ -1,0 +1,1 @@
+/* this is an adveture game in c*/
