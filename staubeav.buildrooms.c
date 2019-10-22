@@ -6,9 +6,9 @@ int main()
   int pid = getpid();
  //creating directory of rooms
  if (mkdir("Staubeav.rooms", pid) == -1)
-   fprintf(stderr, "%s", "Error in file creation");
+   fprintf( stderr, "%s", "Error in file creation\n");
   else
-   fprintf(stout, "%s", "File Created");
+   fprintf( stout, "%s", "File Created\n");
  //while (IsGraphFull() == 0)
  //{
    //AddRandomConnection();
