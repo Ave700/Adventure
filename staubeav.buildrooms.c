@@ -15,6 +15,7 @@ int main()
  //}
 }
 // Returns true if all rooms have 3 to 6 outbound connections, false otherwise
+/*
 bool IsGraphFull()  
 {
   ...
@@ -72,3 +73,4 @@ bool IsSameRoom(Room x, Room y)
 {
   ...
 }
+*/
