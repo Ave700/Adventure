@@ -3,12 +3,12 @@
 // Create all connections in graph
 int main() 
 {
-  int pid = getpid;
+  int pid = getpid();
  //creating directory of rooms
  if (mkdir("Staubeav.rooms", pid) == -1)
-   cerr << "Failed to create rooms" << endl;
+   fprintf(stderr, "%s", "Error in file creation");
   else
-   cout << "Room Directory Created";
+   fprintf(stout, "%s", "File Created");
  //while (IsGraphFull() == 0)
  //{
    //AddRandomConnection();
