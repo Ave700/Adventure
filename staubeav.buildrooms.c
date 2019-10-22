@@ -1,11 +1,19 @@
 /*this is a program in c*/
 //I AM GOING TO USE FALSE=0 and TRUE=1 I HOPE THIS WORKS
 // Create all connections in graph
-while (IsGraphFull() == 0)
+int main() 
 {
-  AddRandomConnection();
+  int pid = getpid;
+ //creating directory of rooms
+ if (mkdir("Staubeav.rooms", pid) == -1)
+   cerr << "Failed to create rooms" << endl;
+  else
+   cout << "Room Directory Created";
+ //while (IsGraphFull() == 0)
+ //{
+   //AddRandomConnection();
+ //}
 }
-
 // Returns true if all rooms have 3 to 6 outbound connections, false otherwise
 bool IsGraphFull()  
 {
