@@ -1,3 +1,4 @@
+#include<stdio.h>
 /*this is a program in c*/
 //I AM GOING TO USE FALSE=0 and TRUE=1 I HOPE THIS WORKS
 // Create all connections in graph
