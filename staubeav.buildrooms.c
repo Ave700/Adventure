@@ -9,7 +9,7 @@ int main()
  if (mkdir("Staubeav.rooms", pid) == -1)
    fprintf( stderr, "%s", "Error in file creation\n");
   else
-   fprintf( stout, "%s", "File Created\n");
+   fprintf( stdout, "%s", "File Created\n");
  //while (IsGraphFull() == 0)
  //{
    //AddRandomConnection();
