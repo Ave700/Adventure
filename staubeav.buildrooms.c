@@ -37,7 +37,7 @@ char* GenerateDirectory()
  if (mkdir(roomdir,0777) == -1)
    fprintf( stderr, "%s", "Error in file creation\n");
   else
-   fprintf( stdout, "%s", "File Created\n");
+   fprintf( stdout, "%s", "\n");
  return roomdir;
 }
 
@@ -74,8 +74,7 @@ void GenerateRooms(char* roomdir)
    if(exist != 1)
    {
      roomselect[i] = r;
-     printf("%d\n", roomselect[i]);
-     MakeRoom(roombank[roomselect[i]]);
+     MakeRoom(roombank[roomselect[i]], roomdir);
      i++;
    }
    
