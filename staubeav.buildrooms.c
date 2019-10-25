@@ -1,21 +1,127 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#define DATASIZE 400
+void MakeRoom(char* name,char* roomdir);
+void GenerateRooms(char* roomdir);
+char* GenerateDirectory();
 /*this is a program in c*/
 //I AM GOING TO USE FALSE=0 and TRUE=1 I HOPE THIS WORKS
 // Create all connections in graph
 int main() 
 {
-  int pid = getpid();
- //creating directory of rooms
- if (mkdir("Staubeav.rooms", pid) == -1)
-   fprintf( stderr, "%s", "Error in file creation\n");
-  else
-   fprintf( stdout, "%s", "File Created\n");
+
+ char *roomdirptr;
+ roomdirptr = GenerateDirectory();
+ GenerateRooms(roomdirptr);
+
  //while (IsGraphFull() == 0)
  //{
    //AddRandomConnection();
  //}
 }
-// Returns true if all rooms have 3 to 6 outbound connections, false otherwise
+
+
+char* GenerateDirectory()
+{
+ //Then i create a directory to put rooms in
+//Taking the pid and changing it to a string
+ //then concatinating the string with my rooms to make a file
+ char cpid[DATASIZE];
+ int pid = getpid();
+ sprintf(cpid, "%d", pid);
+ static char roomdir[DATASIZE] = "staubeav.rooms.";
+ strcat(roomdir, cpid);
+ //creating directory of rooms and checking if it fails
+ if (mkdir(roomdir,0777) == -1)
+   fprintf( stderr, "%s", "Error in file creation\n");
+  else
+   fprintf( stdout, "%s", "File Created\n");
+ return roomdir;
+}
+
+void GenerateRooms(char* roomdir)
+{
+ //Used const for name array cause they should NEVER CHANGE
+ char *roombank[10];
+ roombank[0] = "Zendo"; roombank[1] = "Dereks"; roombank[2] = "Aidans";
+ roombank[3] = "Erichs"; roombank[4] = "Jakes"; roombank[5] = "Kitchen";
+ roombank[6] = "Porch"; roombank[7] = "Basement"; roombank[8] = "Yard";
+ roombank[9] = "Upstairs";
+
+ //created a int at 99 so it will error if it isnt set to a random
+ int r = 0;
+ int i = 0;
+ int j = 0;
+ int exist = 0;
+ //r = rand()%10;
+ //printf("%d", r);
+ int roomselect[7] = {10,10,10,10,10,10,10};
+
+ while( i < 7 )
+ {
+   
+   r = rand() % 10;
+
+   for(j=0; j < i+1; j++)
+   {
+     if(roomselect[j]==r)
+     {
+       exist = 1;
+     }
+   }
+   if(exist != 1)
+   {
+     roomselect[i] = r;
+     printf("%d\n", roomselect[i]);
+     MakeRoom(roombank[roomselect[i]]);
+     i++;
+   }
+   
+   
+   exist = 0;
+   
+ }
+/*
+ int roomnumber;
+ printf(roombank[roomnumber]);
+ int roomcount;
+ int *roomselectptr;
+ 
+ 
+ while(roomcount < 7)
+ { 
+   roomselectptr = &(roomselect[roomnumber]);
+   
+   //printf("%d\n", *roomselectptr);
+   MakeRoom(roombank[*roomselectptr], roomdir);
+   roomcount++;
+ }
+ */
+}
+
+//This is passed the directory to make rooms in and creates rooms
+void MakeRoom(char* name, char* roomdir)
+{
+  //I am not skilled in C
+  //This chunk of code is simply creating the filepath of
+  // ./staubeav.rooms.XXXXXX/roomname
+  char filepath[DATASIZE] = "./";
+  char addslash[DATASIZE] = "/";
+  strcat(filepath, roomdir);
+  strcat(filepath, addslash);
+  strcat(filepath, name);
+  //Now made a roomname format to add
+  char roomname[DATASIZE] = "ROOMNAME: ";
+  strcat(roomname, name);
+  //now creating file in append mode, writing to file, and closing file
+  FILE * fPtr;
+  fPtr = fopen(filepath, "a");
+  fputs(roomname, fPtr);
+  fclose(fPtr);
+}
+
 /*
 bool IsGraphFull()  
 {
@@ -74,7 +180,6 @@ bool IsSameRoom(Room x, Room y)
 {
   ...
 }
-<<<<<<< HEAD
-=======
+
 */
->>>>>>> a2822c1246ff0abfe029d464d43a5d15211190de
+
