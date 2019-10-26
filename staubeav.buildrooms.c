@@ -3,15 +3,19 @@
 #include <string.h>
 #include <stdlib.h>
 #define DATASIZE 400
+//Here i call up the functions i gotta use so that main knows they exist
 void MakeRoom(char* name,char* roomdir);
 void GenerateRooms(char* roomdir);
 char* GenerateDirectory();
-/*this is a program in c*/
+
 //I AM GOING TO USE FALSE=0 and TRUE=1 I HOPE THIS WORKS
 // Create all connections in graph
 int main() 
 {
 
+ //I make a pointer that will point to the data returned by the
+ //generatedirectory funciton. This will allow me to pass the dynamic
+ //roomdirectory throughout my program.
  char *roomdirptr;
  roomdirptr = GenerateDirectory();
  GenerateRooms(roomdirptr);
@@ -25,87 +29,84 @@ int main()
 
 char* GenerateDirectory()
 {
- //Then i create a directory to put rooms in
-//Taking the pid and changing it to a string
- //then concatinating the string with my rooms to make a file
+ //This returns a char string that is the location of a file
+ //In the process it also creates this new file
+ //Create a char to hold the program id
  char cpid[DATASIZE];
  int pid = getpid();
+ //get the pid as an int value then print that int as a char
+ //into the created cpid variable
  sprintf(cpid, "%d", pid);
+ //creating preface for roomdir
  static char roomdir[DATASIZE] = "staubeav.rooms.";
+ //concatinating roomdir with the process id
  strcat(roomdir, cpid);
- //creating directory of rooms and checking if it fails
+ //If it is possible too this creates a file with full permissions
+ //with the given directory route
  if (mkdir(roomdir,0777) == -1)
    fprintf( stderr, "%s", "Error in file creation\n");
   else
    fprintf( stdout, "%s", "\n");
+ //I then return the directory route so other functions can
+ //know where this new directory lives.
  return roomdir;
 }
 
+
 void GenerateRooms(char* roomdir)
 {
- //Used const for name array cause they should NEVER CHANGE
+ //This randomly picks 7 names from a precreated array then creates 
+ //7 files that are named with those names and contain a bit of text
+ //These rooms are placed in the previously created directory
+ //Simply creates an array of 10 names
  char *roombank[10];
  roombank[0] = "Zendo"; roombank[1] = "Dereks"; roombank[2] = "Aidans";
  roombank[3] = "Erichs"; roombank[4] = "Jakes"; roombank[5] = "Kitchen";
  roombank[6] = "Porch"; roombank[7] = "Basement"; roombank[8] = "Yard";
  roombank[9] = "Upstairs";
 
- //created a int at 99 so it will error if it isnt set to a random
- int r = 0;
- int i = 0;
- int j = 0;
- int exist = 0;
- //r = rand()%10;
- //printf("%d", r);
+ //setting variable to be used in loop as well as a boolean type beat
+ int r = 0; int i = 0; int j = 0; int exist = 0;
+ //Starts a array with 7 values all out of range of our name array
+ //this was mainly done for testing but if something goes wrong it will go 
+ //very wrong and i will know where
  int roomselect[7] = {10,10,10,10,10,10,10};
 
+ //This is the core of the function. It is a slightly builky while loop that counts to 7
  while( i < 7 )
- {
-   
+ { 
+   //I pull a random number between 0-9 (the range of my name bank)
    r = rand() % 10;
-
+   //for the size of ints the loop has placed in the selection array
+   //it will check to see if the new number already exists
    for(j=0; j < i+1; j++)
    {
+     //if the for loop finds a duplicate it sets exist to 1
      if(roomselect[j]==r)
-     {
+     { 
        exist = 1;
      }
    }
+   //if the for loop doesnt find a duplicate it sets the current spot
+   //in the array to the random number, then generates a room with that name
    if(exist != 1)
    {
      roomselect[i] = r;
      MakeRoom(roombank[roomselect[i]], roomdir);
      i++;
    }
-   
-   
+   //sets exist back to 0 to start it all over again!!
    exist = 0;
-   
  }
-/*
- int roomnumber;
- printf(roombank[roomnumber]);
- int roomcount;
- int *roomselectptr;
- 
- 
- while(roomcount < 7)
- { 
-   roomselectptr = &(roomselect[roomnumber]);
-   
-   //printf("%d\n", *roomselectptr);
-   MakeRoom(roombank[*roomselectptr], roomdir);
-   roomcount++;
- }
- */
 }
 
-//This is passed the directory to make rooms in and creates rooms
+
 void MakeRoom(char* name, char* roomdir)
 {
+  //This is passed the directory to make rooms in and creates rooms
   //I am not skilled in C
   //This chunk of code is simply creating the filepath of
-  // ./staubeav.rooms.XXXXXX/roomname
+  // ./staubeav.rooms.PID/roomname
   char filepath[DATASIZE] = "./";
   char addslash[DATASIZE] = "/";
   strcat(filepath, roomdir);
@@ -113,6 +114,7 @@ void MakeRoom(char* name, char* roomdir)
   strcat(filepath, name);
   //Now made a roomname format to add
   char roomname[DATASIZE] = "ROOMNAME: ";
+  //concatinating the roomname with the rooms name lol 
   strcat(roomname, name);
   //now creating file in append mode, writing to file, and closing file
   FILE * fPtr;
