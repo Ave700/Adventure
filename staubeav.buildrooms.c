@@ -4,9 +4,16 @@
 #include <stdlib.h>
 #define DATASIZE 400
 //Here i call up the functions i gotta use so that main knows they exist
+
 void MakeRoom(char* name,char* roomdir);
-void GenerateRooms(char* roomdir);
+char** GenerateRooms(char** selectednames, char* roomdir);
 char* GenerateDirectory();
+struct Room{
+  char c1[DATASIZE], c2[DATASIZE], c3[DATASIZE], c4[DATASIZE],
+  c5[DATASIZE], c6[DATASIZE];
+
+
+};
 
 //I AM GOING TO USE FALSE=0 and TRUE=1 I HOPE THIS WORKS
 // Create all connections in graph
@@ -16,9 +23,19 @@ int main()
  //I make a pointer that will point to the data returned by the
  //generatedirectory funciton. This will allow me to pass the dynamic
  //roomdirectory throughout my program.
+ int i =0;
  char *roomdirptr;
  roomdirptr = GenerateDirectory();
- GenerateRooms(roomdirptr);
+ char* selectednames[DATASIZE];
+ char** selectednamesptr = GenerateRooms(selectednames, roomdirptr);
+ //created structs named by selected rooms
+ for(i=0; i<7; i++)
+ {
+   struct Room selectednames[i];
+   printf("%s", selectednames[i]);
+ }
+
+ 
 
  //while (IsGraphFull() == 0)
  //{
@@ -53,7 +70,7 @@ char* GenerateDirectory()
 }
 
 
-void GenerateRooms(char* roomdir)
+char** GenerateRooms(char** selectednames, char* roomdir)
 {
  //This randomly picks 7 names from a precreated array then creates 
  //7 files that are named with those names and contain a bit of text
@@ -71,7 +88,10 @@ void GenerateRooms(char* roomdir)
  //this was mainly done for testing but if something goes wrong it will go 
  //very wrong and i will know where
  int roomselect[7] = {10,10,10,10,10,10,10};
-
+ //decided this function needs to export the selected names
+          //char ** selectednames_func = malloc(10 * sizeof(char*));
+  //added srand so its different per run
+  srand(time(0));
  //This is the core of the function. It is a slightly builky while loop that counts to 7
  while( i < 7 )
  { 
@@ -93,11 +113,13 @@ void GenerateRooms(char* roomdir)
    {
      roomselect[i] = r;
      MakeRoom(roombank[roomselect[i]], roomdir);
+     selectednames[i] =roombank[roomselect[i]];
      i++;
    }
    //sets exist back to 0 to start it all over again!!
    exist = 0;
  }
+ return selectednames;
 }
 
 
@@ -175,12 +197,11 @@ void ConnectRoom(Room x, Room y)
 {
   ...
 }
-
+*/
 // Returns true if Rooms x and y are the same Room, false otherwise
+/*
 bool IsSameRoom(Room x, Room y) 
 {
   ...
 }
-
 */
-
