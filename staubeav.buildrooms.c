@@ -2,41 +2,52 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#define ROOMQUANTITY 7
 #define DATASIZE 400
 //Here i call up the functions i gotta use so that main knows they exist
 
 void MakeRoom(char* name,char* roomdir);
-char** GenerateRooms(char** selectednames, char* roomdir);
+char** GenerateRooms(char* roomdir);
 char* GenerateDirectory();
 struct Room{
-  char c1[DATASIZE], c2[DATASIZE], c3[DATASIZE], c4[DATASIZE],
-  c5[DATASIZE], c6[DATASIZE];
-
-
+  char roomname[9];
+  char c[6][DATASIZE];
+  int cCount;
 };
+void ConnectRooms(struct Room* x, struct Room* y, char* roomdir);
+int IsGraphFull(struct Room room[ROOMQUANTITY]);
+int GetRandomRoom();
+int CanAddConnectionFrom(struct Room* x);
+int ConnectionAlreadyExists(struct Room* x, struct Room* y);
+int IsSameRoom(struct Room* x, struct Room* y);
+void AddRandomConnection(struct Room room[ROOMQUANTITY], char* roomdir);
 
 //I AM GOING TO USE FALSE=0 and TRUE=1 I HOPE THIS WORKS
 // Create all connections in graph
 int main() 
 {
-
+ 
  //I make a pointer that will point to the data returned by the
  //generatedirectory funciton. This will allow me to pass the dynamic
  //roomdirectory throughout my program.
  int i =0;
  char *roomdirptr;
  roomdirptr = GenerateDirectory();
- char* selectednames[DATASIZE];
- char** selectednamesptr = GenerateRooms(selectednames, roomdirptr);
- //created structs named by selected rooms
- for(i=0; i<7; i++)
+ //char* selectednames[DATASIZE];
+ char** selectednames; 
+ selectednames = GenerateRooms(roomdirptr);
+
+ //Simply makes a array of structs and sets each one's 
+ //roomname to what we generated
+ struct Room room[ROOMQUANTITY];
+ for(i =0; i< ROOMQUANTITY; i++)
  {
-   struct Room selectednames[i];
-   printf("%s", selectednames[i]);
+   strcpy(room[i].roomname, selectednames[i]);
  }
 
+ AddRandomConnection(room, roomdirptr);
  
-
+ 
  //while (IsGraphFull() == 0)
  //{
    //AddRandomConnection();
@@ -70,7 +81,7 @@ char* GenerateDirectory()
 }
 
 
-char** GenerateRooms(char** selectednames, char* roomdir)
+char** GenerateRooms(char* roomdir)
 {
  //This randomly picks 7 names from a precreated array then creates 
  //7 files that are named with those names and contain a bit of text
@@ -87,13 +98,14 @@ char** GenerateRooms(char** selectednames, char* roomdir)
  //Starts a array with 7 values all out of range of our name array
  //this was mainly done for testing but if something goes wrong it will go 
  //very wrong and i will know where
- int roomselect[7] = {10,10,10,10,10,10,10};
+ int roomselect[ROOMQUANTITY] = {10,10,10,10,10,10,10};
  //decided this function needs to export the selected names
           //char ** selectednames_func = malloc(10 * sizeof(char*));
   //added srand so its different per run
   srand(time(0));
  //This is the core of the function. It is a slightly builky while loop that counts to 7
- while( i < 7 )
+ static char* selectednames[ROOMQUANTITY];
+ while( i < ROOMQUANTITY )
  { 
    //I pull a random number between 0-9 (the range of my name bank)
    r = rand() % 10;
@@ -109,6 +121,7 @@ char** GenerateRooms(char** selectednames, char* roomdir)
    }
    //if the for loop doesnt find a duplicate it sets the current spot
    //in the array to the random number, then generates a room with that name
+   
    if(exist != 1)
    {
      roomselect[i] = r;
@@ -145,63 +158,133 @@ void MakeRoom(char* name, char* roomdir)
   fclose(fPtr);
 }
 
-/*
-bool IsGraphFull()  
+
+int IsGraphFull(struct Room room[ROOMQUANTITY])  
 {
-  ...
+  int i = 0;
+  int fail = 0;
+  for(i = 0; i < ROOMQUANTITY; i++)
+  {
+    if(room[i].cCount < 3)
+      fail = 1;
+  }
+  if(fail == 1)
+   return 0;
+  else
+   return 1;
 }
 
+
 // Adds a random, valid outbound connection from a Room to another Room
-void AddRandomConnection()  
+void AddRandomConnection(struct Room room[ROOMQUANTITY], char* roomdir)  
 {
-  Room A;  // Maybe a struct, maybe global arrays of ints
-  Room B;
+  int roomX;
+  int roomY;
 
   while(1 == 1)
   {
-    A = GetRandomRoom();
+    roomX = GetRandomRoom();
 
-    if (CanAddConnectionFrom(A) == true)
+    if (CanAddConnectionFrom(&room[roomX]) == 1)
       break;
   }
 
   do
   {
-    B = GetRandomRoom();
+    roomY = GetRandomRoom();
   }
-  while(CanAddConnectionFrom(B) == false || IsSameRoom(A, B) == true || ConnectionAlreadyExists(A, B) == true);
+  while(CanAddConnectionFrom(&room[roomY]) == 0 || IsSameRoom(&room[roomX], &room[roomY]) == 1 || ConnectionAlreadyExists(&room[roomX], &room[roomY]) == 1);
 
-  ConnectRoom(A, B);  // TODO: Add this connection to the real variables, 
-  ConnectRoom(B, A);  //  because this A and B will be destroyed when this function terminates
+  //ConnectRooms(&room[roomX], &room[roomY], roomdir);  // TODO: Add this connection to the real variables, 
+  
 }
 
 // Returns a random Room, does NOT validate if connection can be added
-Room GetRandomRoom()
+int GetRandomRoom()
 {
-  ...
+  //because of my implimentation i believe its easier to just return a random
+  //number between 0-6 and use that in my struct array call. so ima do that
+  srand(time(0));
+  int r = rand() % ROOMQUANTITY;
+  return r;
 }
 
+
 // Returns true if a connection can be added from Room x (< 6 outbound connections), false otherwise
-bool CanAddConnectionFrom(Room x) 
+int CanAddConnectionFrom(struct Room* x) 
 {
-  ...
+  if(x->cCount < 6)
+   return 1;
+  else
+   return 0;
 }
+
+
 // Returns true if a connection from Room x to Room y already exists, false otherwise
-bool ConnectionAlreadyExists(x, y)
+int ConnectionAlreadyExists(struct Room* x, struct Room* y)
 {
-  ...
+  int exists = 0;
+  int i;
+  for(i = 0; i < x->cCount; i++)
+  {
+    if(strcmp(x->c[i], y->roomname)==0)
+     exists=1;
+  }
+
+  if(exists == 0)
+   return 0;
+  else
+   return 1;
 }
 
 // Connects Rooms x and y together, does not check if this connection is valid
-void ConnectRoom(Room x, Room y) 
+void ConnectRooms(struct Room* x, struct Room* y, char* roomdir) 
 {
-  ...
+  //This function might have excessive code but does it look LIKE I CARE 
+  //This portion is for internal within program memory keeping
+  //I copy the roomname from the opposite room struct and place it inside the c[i] of first
+  //and vice versa. In this case i is determined by how many connections are made already inside
+  // of the individual struc
+  strcpy(x->c[x->cCount], y->roomname);
+  x->cCount++;
+  strcpy(y->c[y->cCount], x->roomname);
+  y->cCount++;
+  //This is very similar to the MakeRooms file manipulation
+  //But it is done doubly so both rooms' files are modified.
+  char addslash[DATASIZE] = "/";
+  char roomXFP[DATASIZE];
+  char roomYFP[DATASIZE];
+  strcat(roomXFP, roomdir);
+  strcat(roomYFP, roomdir);
+  strcat(roomXFP, addslash);
+  strcat(roomYFP, addslash);
+  strcat(roomXFP, x->roomname);
+  strcat(roomYFP, y->roomname);
+  char newconnectionX[DATASIZE] = "\nCONNECTION: ";
+  char newconnectionY[DATASIZE] = "\nCONNECTION: ";
+  //each room gets the opposite rooms name in its file just like the above internal
+  // memory stuff i did. sorry i lost track of my sentance. 
+  strcat(newconnectionX, y->roomname);
+  strcat(newconnectionY, x->roomname);
+  //file accessing to append
+  FILE * fPtr;
+  fPtr = fopen(roomXFP, "a");
+  fputs(newconnectionX, fPtr);
+  fclose(fPtr);
+  //now for the second room
+  fPtr = fopen(roomYFP, "a");
+  fputs(newconnectionY, fPtr);
+  fclose(fPtr);
 }
-*/
+
 // Returns true if Rooms x and y are the same Room, false otherwise
-/*
-bool IsSameRoom(Room x, Room y) 
+
+int IsSameRoom(struct Room* x, struct Room* y) 
 {
-  ...
+  int sameRoomTest = strcmp(x->roomname, y->roomname);
+  if(sameRoomTest == 0)
+    return 1;
+  else
+    return 0;
 }
-*/
+
