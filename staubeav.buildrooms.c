@@ -328,7 +328,7 @@ void InstallOrder(struct Room room[ROOMQUANTITY], char* roomdir)
   fputs(startRM, fPtr);
   fclose(fPtr);
   //this fills all middle elements with the mid room call
-  char endRM[DATASIZE] = "\nROOM TYPE: End_ROOM";
+  char endRM[DATASIZE] = "\nROOM TYPE: END_ROOM";
   char middleRM[DATASIZE] = "\nROOM TYPE: MID_ROOM";
   for(i=1; i<ROOMQUANTITY-1; i++)
   {
